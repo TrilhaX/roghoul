@@ -127,6 +127,7 @@ function killaura()
             Vector3.new()
         )
         wait()
+        end
     end
 end
 
