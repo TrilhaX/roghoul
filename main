@@ -25,10 +25,6 @@ wait(1)
 warn('[TEMPEST HUB] Last Checking')
 wait(1)
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-
-
 function GetCFrame(obj, height, angle)
     local cframe = CFrame.new()
 
@@ -68,73 +64,116 @@ end
 
 function autoccg()
     while getgenv().autoccg == true do
-        local args = {
-            [1] = "CCG"
-        }
-        
-        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Race"):WaitForChild("Chose"):InvokeServer(unpack(args))
-    end    
+            local args = {
+                [1] = "CCG"
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Race"):WaitForChild("Chose"):InvokeServer(unpack(args))
+            wait()
+        end
+    wait()
 end
+
 
 function autoghoul()
     while getgenv().autoghoul == true do
-        local args = {
-            [1] = "Ghoul"
-        }
-
-        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Race"):WaitForChild("Chose"):InvokeServer(unpack(args))
-    end    
+            local args = {
+                [1] = "Ghoul"
+            }
+    
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Race"):WaitForChild("Chose"):InvokeServer(unpack(args))
+            wait()
+        end
+    wait()
 end
 
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local positions = {"BL", "BR", "FL", "FR", "Gyakusatsu"}
+
 function autogyakysatsu()
-    while true do
-        if toggle then
-            local spawnPointNames = {"BL", "BR", "FL", "FR", "Gyakusatsu"}
-            for _, spawnName in ipairs(spawnPointNames) do
-                local spawnPoint = gyakusatsuSpawn:FindFirstChild(spawnName)
-                if spawnPoint then
-                    local targetCFrame = GetCFrame(spawnPoint)
-                    if targetCFrame then
-                        tweenToPosition(targetCFrame)
-                        wait(1) -- Espera 1 segundo antes de continuar para o próximo ponto de spawn
-                    else
-                        print("Target CFrame not found for "..spawnName)
+    while getgenv().autogyakysatsu == true do
+        local npcSpawns = game.Workspace:FindFirstChild("NPCSpawns")
+        if npcSpawns then
+            wait()
+            local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
+            if gyakusatsuSpawn then
+                local targetCFrame = nil
+                for _, position in ipairs(positions) do
+                    local spawn = gyakusatsuSpawn:FindFirstChild(position)
+                    if spawn then
+                        targetCFrame = GetCFrame(spawn)
+                        break
                     end
                 end
+                if targetCFrame then
+                    tweenToPosition(targetCFrame)
+                    function getNil(name,class) for _,v in next, getnilinstances()do if v.ClassName==class and v.Name==name then return v;end end end
+
+                    local args = {
+                        [1] = "\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146" ..
+                        "\166\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145" ..
+                        "\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\166" ..
+                        "\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\148\240\159\141\145\240\159" ..
+                        "\145\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140",
+                        [2] = "Mouse1",
+                        [3] = "Up",
+                        [4] = CFrame.new(-518.6259765625, 79.89118194580078, 307.98248291015625, -0.6046967506408691, -0.41064175963401794, 0.6824333667755127, -1.4901162970204496e-08, 0.8568377494812012, 0.5155863165855408, -0.7964559197425842, 0.3117733597755432, -0.518126904964447),
+                        [6] = CFrame.new(-515.169189453125, 82.50279998779297, 305.3580322265625, -0.9902395606040955, -0.05592380091547966, 0.1276642084121704, 3.725290298461914e-09, 0.9159709215164185, 0.4012446105480194, -0.13937583565711975, 0.39732828736305237, -0.9070306420326233),
+                        [7] = Vector3.new(-520, 64.71410369873047, 342.0138244628906)
+                    }
+
+                    getNil("TempestGpo2", "Model"):WaitForChild("Remotes"):WaitForChild("KeyEvent"):FireServer(unpack(args))
+                    wait()
+                else
+                    print("No spawn found!")
+                    print("Teleporting")
+                    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
+                    print("Teleported")
+                    wait(5)
+                    wait(5)
+                end
+            else
+                print("GyakusatsuSpawn not found!")
+                print("Teleporting")
+                loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
+                print("Teleported")
+                wait(5)
+                wait(5)
             end
-            -- Se chegarmos a este ponto, nenhum ponto de spawn foi encontrado
-            warn("No spawn points found in the GyakusatsuSpawn folder!")
+        else
+            warn("NPCSpawns not found!")
+            wait(5)
         end
-        wait()
     end
+end
+
+function tweenToPosition(position)
+    local character = Players.LocalPlayer.Character
+    if not character then
+        return
+    end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then
+        return
+    end
+    
+    local tweenInfo = TweenInfo.new(
+        1,
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.InOut,
+        0,
+        false
+    )
+    
+    local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = position})
+    tween:Play()
+    tween.Completed:Wait()  -- Aguarda até que a animação termine antes de prosseguir
 end
 
 coroutine.wrap(autogyakysatsu)()
-
-
-function serverhop()
-    while getgenv().serverhop == true do
-        local workspace = game:GetService("Workspace")
-        local npcSpawns = workspace:FindFirstChild("NPCSpawns")
-        if npcSpawns then
-            local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
-            if gyakusatsuSpawn then
-                local gyakusatsu = gyakusatsuSpawn:FindFirstChild("Gyakusatsu")
-                if not gyakusatsu then
-                    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
-                    print("Teleporting")
-                    wait(1)
-                else
-                    print("Spawned")
-                    wait()
-                end
-            end
-        end
-        wait()
-    end
-end
-
-
 
 local Tabs = {
     Main = Window:AddTab('Main'),
@@ -161,7 +200,7 @@ LeftGroupBox:AddToggle('autoghoul', {
 })
 
 LeftGroupBox:AddToggle('AutoGyakusatsu', {
-    Text = 'Auto Gyakusatsu',
+    Text = 'Auto Gyakusatsu With Server Hop',
     Default = false,
     Callback = function(Value)
         getgenv().autogyakysatsu = Value
@@ -169,14 +208,6 @@ LeftGroupBox:AddToggle('AutoGyakusatsu', {
     end
 })
 
-LeftGroupBox:AddToggle('ServerHop', {
-    Text = 'Server Hop',
-    Default = false,
-    Callback = function(Value)
-        getgenv().serverhop = Value
-        serverhop()
-    end
-})
 
 local FrameTimer = tick()
 local FrameCounter = 0
