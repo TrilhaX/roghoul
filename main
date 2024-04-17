@@ -1,3 +1,27 @@
+if getgenv().executed then
+    return
+end
+getgenv().executed = true
+repeat wait() until game:IsLoaded()
+local queue_on_teleport = queue_on_teleport or syn.queue_on_teleport or fluxus.queue_on_teleport or function(...)
+    return ...
+end
+
+game.Players.LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started or Enum.TeleportState.InProgress then
+        
+            queue_on_teleport([[
+                repeat wait() until game:IsLoaded()
+                wait(2)
+                if getgenv().executed then 
+                    return 
+                end
+                getgenv().executed = true
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/TrilhaX/roghoul/main/main"))()
+                ]])
+    end
+end)
+
 warn('[TEMPEST HUB] Loading Bypass')
 wait(1)
 warn('[TEMPEST HUB] Loading Ui')
@@ -87,6 +111,25 @@ function autoghoul()
     wait()
 end
 
+function killaura()
+    while getgenv().killaura == true do
+        while true do
+        game.Players.LocalPlayer.Character.Remotes.KeyEvent:FireServer(
+            "\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146" ..
+            "\166\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145" ..
+            "\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\166" ..
+            "\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\148\240\159\141\145\240\159" ..
+            "\145\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140", 
+            "Mouse1", 
+            "Up", 
+            CFrame.new(), 
+            CFrame.new(), 
+            Vector3.new()
+        )
+        wait()
+    end
+end
+
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
@@ -96,55 +139,39 @@ function autogyakysatsu()
     while getgenv().autogyakysatsu == true do
         local npcSpawns = game.Workspace:FindFirstChild("NPCSpawns")
         if npcSpawns then
-            wait()
+            -- Check for GyakusatsuSpawn within NPCSpawns
             local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
             if gyakusatsuSpawn then
+                -- Find a suitable spawn location from a list of positions
                 local targetCFrame = nil
                 for _, position in ipairs(positions) do
                     local spawn = gyakusatsuSpawn:FindFirstChild(position)
                     if spawn then
-                        targetCFrame = GetCFrame(spawn)
+                        targetCFrame = GetCFrame(spawn) -- Get CFrame for tweening
                         break
                     end
                 end
                 if targetCFrame then
-                    tweenToPosition(targetCFrame)
-                    function getNil(name,class) for _,v in next, getnilinstances()do if v.ClassName==class and v.Name==name then return v;end end end
-
-                    local args = {
-                        [1] = "\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146" ..
-                        "\166\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145" ..
-                        "\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\166" ..
-                        "\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\148\240\159\141\145\240\159" ..
-                        "\145\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140",
-                        [2] = "Mouse1",
-                        [3] = "Up",
-                        [4] = CFrame.new(-518.6259765625, 79.89118194580078, 307.98248291015625, -0.6046967506408691, -0.41064175963401794, 0.6824333667755127, -1.4901162970204496e-08, 0.8568377494812012, 0.5155863165855408, -0.7964559197425842, 0.3117733597755432, -0.518126904964447),
-                        [6] = CFrame.new(-515.169189453125, 82.50279998779297, 305.3580322265625, -0.9902395606040955, -0.05592380091547966, 0.1276642084121704, 3.725290298461914e-09, 0.9159709215164185, 0.4012446105480194, -0.13937583565711975, 0.39732828736305237, -0.9070306420326233),
-                        [7] = Vector3.new(-520, 64.71410369873047, 342.0138244628906)
-                    }
-
-                    getNil("TempestGpo2", "Model"):WaitForChild("Remotes"):WaitForChild("KeyEvent"):FireServer(unpack(args))
-                    wait()
+                    tweenToPosition(targetCFrame) -- Tween player's position to targetCFrame
+                    wait() -- Wait for a short duration before the next iteration
                 else
-                    print("No spawn found!")
-                    print("Teleporting")
+                    -- If no spawn found, attempt to teleport using external script
+                    print("No spawn found! Teleporting...")
                     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
                     print("Teleported")
-                    wait(5)
-                    wait(5)
+                    wait(5) -- Wait for a longer duration before the next iteration
                 end
             else
-                print("GyakusatsuSpawn not found!")
-                print("Teleporting")
+                print("GyakusatsuSpawn not found! Teleporting...")
                 loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
                 print("Teleported")
                 wait(5)
                 wait(5)
             end
         else
-            warn("NPCSpawns not found!")
-            wait(5)
+            -- If NPCSpawns not found, log a warning
+            warn("NPCSpawns not found! Waiting...")
+            wait(5) -- Wait for a longer duration before the next iteration
         end
     end
 end
@@ -196,6 +223,15 @@ LeftGroupBox:AddToggle('autoghoul', {
     Callback = function(Value)
         getgenv().autoghoul = Value
         autoghoul()
+    end
+})
+
+LeftGroupBox:AddToggle('KillAura', {
+    Text = 'Kill Aura',
+    Default = false,
+    Callback = function(Value)
+        getgenv().killaura = Value
+        killaura()
     end
 })
 
