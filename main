@@ -140,39 +140,34 @@ function autogyakysatsu()
     while getgenv().autogyakysatsu == true do
         local npcSpawns = game.Workspace:FindFirstChild("NPCSpawns")
         if npcSpawns then
-            -- Check for GyakusatsuSpawn within NPCSpawns
             local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
             if gyakusatsuSpawn then
-                -- Find a suitable spawn location from a list of positions
                 local targetCFrame = nil
                 for _, position in ipairs(positions) do
                     local spawn = gyakusatsuSpawn:FindFirstChild(position)
                     if spawn then
-                        targetCFrame = GetCFrame(spawn) -- Get CFrame for tweening
+                        targetCFrame = GetCFrame(spawn)
                         break
                     end
                 end
                 if targetCFrame then
-                    tweenToPosition(targetCFrame) -- Tween player's position to targetCFrame
-                    wait() -- Wait for a short duration before the next iteration
+                    tweenToPosition(targetCFrame)
+                    wait()
                 else
-                    -- If no spawn found, attempt to teleport using external script
                     print("No spawn found! Teleporting...")
                     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
                     print("Teleported")
-                    wait(5) -- Wait for a longer duration before the next iteration
+                    wait(5)
                 end
             else
                 print("GyakusatsuSpawn not found! Teleporting...")
                 loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Server-hop-7401"))()
                 print("Teleported")
                 wait(5)
-                wait(5)
             end
         else
-            -- If NPCSpawns not found, log a warning
             warn("NPCSpawns not found! Waiting...")
-            wait(5) -- Wait for a longer duration before the next iteration
+            wait(5)
         end
     end
 end
@@ -199,6 +194,31 @@ function tweenToPosition(position)
     local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = position})
     tween:Play()
     tween.Completed:Wait()  -- Aguarda até que a animação termine antes de prosseguir
+end
+
+local selectedEnemie = nil
+
+function autofarm()
+    while getgenv().autofarm do
+        local NpcSpawns = workspace.NPCSpawns
+        local Children = NpcSpawns:GetChildren()
+        local ValuesEnemie = {}
+        local selectedEnemie = {}
+        local namesSeen = {} -- Tabela para rastrear os nomes já vistos
+        
+        for _, child in ipairs(Children) do
+            if child.Name ~= "GyakusatsuSpawn" and selectedEnemie then -- Verificando se selectedEnemie está definido
+                local Children2 = child:GetChildren()
+                for _, child2 in ipairs(Children2) do
+                    local humanoidRootPart = child2:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart and child2.Name == selectedEnemie then
+                        print("Position of " .. selectedEnemie .. ": " .. humanoidRootPart.Position)
+                    end
+                end
+            end
+        end
+        wait() -- Adicionando um pequeno atraso entre as iterações
+    end
 end
 
 coroutine.wrap(autogyakysatsu)()
@@ -236,8 +256,47 @@ LeftGroupBox:AddToggle('KillAura', {
     end
 })
 
-LeftGroupBox:AddToggle('AutoGyakusatsu', {
-    Text = 'Auto Gyakusatsu With Server Hop',
+local RightGroupBox = Tabs.Main:AddRightGroupbox('Farm')
+
+local NpcSpawns = workspace.NPCSpawns
+local Children = NpcSpawns:GetChildren()
+local ValuesEnemie = {}
+local namesSeen = {} -- Tabela para rastrear os nomes já vistos
+
+for _, child in ipairs(Children) do
+    if child.Name ~= "GyakusatsuSpawn" and not namesSeen[child.Name] then
+        namesSeen[child.Name] = true
+        local Children2 = child:GetChildren() -- Corrigido para 'child', em vez de 'child2'
+        for _, child2 in ipairs(Children2) do
+            table.insert(ValuesEnemie, child2.Name) -- Imprimindo o nome do filho
+        end
+    end
+end
+
+
+RightGroupBox:AddDropdown('Enemie', {
+    Values = ValuesEnemie,
+    Default = "None",
+    Multi = false,
+    Text = 'Choose Mob',
+    Callback = function(value)
+        selectedEnemie = value
+    end
+})
+
+RightGroupBox:AddToggle('AutoFarm', {
+    Text = 'Auto Farm',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autofarm = Value
+        if Value then
+            autofarm() -- Iniciar o autofarm apenas se estiver ativado
+        end
+    end
+})
+
+RightGroupBox:AddToggle('AutoGyakusatsu', {
+    Text = 'Auto Gyakusatsu(With ServerHop)',
     Default = false,
     Callback = function(Value)
         getgenv().autogyakysatsu = Value
@@ -245,6 +304,111 @@ LeftGroupBox:AddToggle('AutoGyakusatsu', {
     end
 })
 
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('Stats')
+
+local playerFolderStats = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerFolder")
+
+local yen = ""
+local rc = ""
+local rp = ""
+local TotalFoucusPoints = ""
+local level = ""
+local Focus = ""
+local EtoYoshimuraKills = ""
+local KoutarouAmonKills = ""
+local NishikiNishioKills = ""
+local ToukaKirishimaKills = ""
+local GyaSacs = ""
+local Experience = ""
+local ExpTime2x = ""
+local Durability = ""
+
+if playerFolderStats then
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+    if Stats then
+        yen = Stats.Yen.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            rc = Stats.RC.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            rp = Stats.Reputation.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            TotalFoucusPoints = Stats.TotalFocusPoints.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            level = Stats.Level.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            Focus = Stats.Focus.Value
+    end
+
+    local playerFolderBossKills = playerFolderStats:FindFirstChild("BossKills")
+    if playerFolderBossKills then
+        if playerFolderBossKills:FindFirstChild("Eto Yoshimura") then
+            EtoYoshimuraKills = playerFolderBossKills["Eto Yoshimura"].Value
+        end
+
+        if playerFolderBossKills:FindFirstChild("Koutarou Amon") then
+            KoutarouAmonKills = playerFolderBossKills["Koutarou Amon"].Value
+        end
+
+        if playerFolderBossKills:FindFirstChild("Nishiki Nishio") then
+            NishikiNishioKills = playerFolderBossKills["Nishiki Nishio"].Value
+        end
+
+        if playerFolderBossKills:FindFirstChild("Touka Kirishima") then
+            ToukaKirishimaKills = playerFolderBossKills["Touka Kirishima"].Value
+        end
+    end
+
+    if playerFolderStats:FindFirstChild("Inventory") then
+        if playerFolderStats.Inventory:FindFirstChild("GyaSacs") then
+            GyaSacs = playerFolderStats.Inventory.GyaSacs.Value
+        end
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            Experience = Stats.Experience.Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            ExpTime2x = Stats["2xExpTime"].Value
+    end
+
+    local Stats = playerFolderStats:FindFirstChild("Stats") 
+        if Stats then
+            Durability = Stats.Durability.Value
+    end
+end
+
+LeftGroupBox:AddLabel("Yen: " .. yen, true)
+LeftGroupBox:AddLabel("RC: " .. rc, true)
+LeftGroupBox:AddLabel("Reputation: " .. rp, true)
+LeftGroupBox:AddLabel("Total Focus Points: " .. TotalFoucusPoints, true)
+LeftGroupBox:AddLabel("Level: " .. level, true)
+LeftGroupBox:AddLabel("Focus: " .. Focus, true)
+LeftGroupBox:AddLabel("Eto Yoshimura Kills: " .. EtoYoshimuraKills, true)
+LeftGroupBox:AddLabel("Koutarou Amon Kills: " .. KoutarouAmonKills, true)
+LeftGroupBox:AddLabel("Nishiki Nishio Kills: " .. NishikiNishioKills, true)
+LeftGroupBox:AddLabel("Touka Kirishima Kills: " .. ToukaKirishimaKills, true)
+LeftGroupBox:AddLabel("Gya Sacs: " .. GyaSacs, true)
+LeftGroupBox:AddLabel("Experience: " .. Experience, true)
+LeftGroupBox:AddLabel("2x Exp Time: " .. ExpTime2x, true)
+LeftGroupBox:AddLabel("Durability: " .. Durability, true)
 
 local FrameTimer = tick()
 local FrameCounter = 0
