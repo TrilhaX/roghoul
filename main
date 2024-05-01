@@ -288,7 +288,7 @@ function tweenToPosition(position)
     end
     
     local tweenInfo = TweenInfo.new(
-        1,
+        0,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.InOut,
         0,
@@ -344,63 +344,129 @@ end
 
 local selectedEnemie = nil
 
-function autofarm()
-    while getgenv().autofarm do
-        if selectedMob ~= "None" then
-            local blacklist = {
-                ["GyakusatsuSpawn"] = true,
-                ["BossSpawn"] = true,
-            }
-                
-            local printedNames = {} -- Lista para rastrear os nomes já impressos
-            local ValuesMobs = {}
-                
-            local Spawns = workspace.NPCSpawns
-            local children = Spawns:GetChildren()
-            
-            for _, child in ipairs(children) do
+function autofarmhuman()
+    while getgenv().autofarmhuman == true do
+        local blacklist = {
+            ["GyakusatsuSpawn"] = true,
+            ["BossSpawns"] = true,
+            ["AggroSpawns"] = true,
+            ["CCGSpawns"] = true,
+            ["GhoulSpawns"] = true,
+        }
+                        
+        local Humans = workspace.NPCSpawns
+        local children = Humans:GetChildren()
+                    
+        for _, child in ipairs(children) do
+            if getgenv().autofarmhuman then
                 if not blacklist[child.Name] then
-                    local npc = child
-                    local humanoidRootPart = npc:FindFirstChild("HumanoidRootPart", true)
-                    local targetCFrame = GetCFrame(humanoidRootPart)
-                    tweenToPosition(targetCFrame)
-                    wait()
+                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
+                            local targetCFrame = GetCFrame(humanoidRootPart)
+                            tweenToPosition(targetCFrame)
+                            wait()
+                        end
+                    end
                 end
+            else
+                break
             end
-        else
-            wait()
+        end
+    end
+end
+
+function autofarminvestigators()
+    while getgenv().autofarminvestigators do
+        local blacklist = {
+            ["GyakusatsuSpawn"] = true,
+            ["BossSpawns"] = true,
+            ["HumanSpawns"] = true,
+            ["GhoulSpawns"] = true,
+        }
+                                      
+        local Humans = workspace.NPCSpawns
+        local children = Humans:GetChildren()
+                    
+        for _, child in ipairs(children) do
+            if getgenv().autofarminvestigators then
+                if not blacklist[child.Name] then
+                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
+                            local targetCFrame = GetCFrame(humanoidRootPart)
+                            tweenToPosition(targetCFrame)
+                            wait()
+                        end
+                    end
+                end
+            else
+                wait()
+            end
+        end
+    end
+end
+
+function autofarmAogiriMembers()
+    while getgenv().autofarmAogiriMembers do
+        local blacklist = {
+            ["GyakusatsuSpawn"] = true,
+            ["BossSpawns"] = true,
+            ["HumanSpawns"] = true,
+            ["AggroSpawns"] = true,
+            ["CCGSpawns"] = true,
+        }
+                        
+        local Humans = workspace.NPCSpawns
+        local children = Humans:GetChildren()
+                    
+        for _, child in ipairs(children) do
+            if getgenv().autofarmAogiriMembers then
+                if not blacklist[child.Name] then
+                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
+                            local targetCFrame = GetCFrame(humanoidRootPart)
+                            tweenToPosition(targetCFrame)
+                            wait()
+                        end
+                    end
+                end
+            else
+                break
+            end
         end
     end
 end
 
 function autofarmboss()
     while getgenv().autofarmboss do
-        if selectedMob ~= "None" then
-            local blacklist = {
-                ["GyakusatsuSpawn"] = true,
-                ["AggroSpawns"] = true,
-                ["CCGSpawns"] = true,
-                ["GhoulSpawns"] = true,
-                ["HumanSpawns"] = true,
-            }
+        local blacklist = {
+            ["GyakusatsuSpawn"] = true,
+            ["AggroSpawns"] = true,
+            ["CCGSpawns"] = true,
+            ["GhoulSpawns"] = true,
+            ["HumanSpawns"] = true,
+        }
                 
-            local printedNames = {} -- Lista para rastrear os nomes já impressos
-            local ValuesMobs = {}
-                
-            local Spawns = workspace.NPCSpawns
-            local children = Spawns:GetChildren()
+        local Spawns = workspace.NPCSpawns
+        local children = Spawns:GetChildren()
             
-            for _, child in ipairs(children) do
+        for _, child in ipairs(children) do
+            if getgenv().autofarmboss then
                 if not blacklist[child.Name] then
-                    local Boss = child
-                    local humanoidRootPart = Boss:FindFirstChild("HumanoidRootPart", true)
-                    local targetCFrame = GetCFrame(humanoidRootPart)
-                    tweenToPosition(targetCFrame)
-                    wait()
+                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
+                            local targetCFrame = GetCFrame(humanoidRootPart)
+                            tweenToPosition(targetCFrame)
+                            wait()
+                        end
+                    end
                 end
+            else
+                break
             end
-        else
-            wait()
         end
     end
 end
@@ -630,26 +696,35 @@ LeftGroupBox:AddToggle('AutoTrain', {
 
 local RightGroupBox = Tabs.Main:AddRightGroupbox('Farm')
 
-
-
-
-RightGroupBox:AddDropdown('Enemie', {
-    Values = ValuesMobs,
-    Default = "None",
-    Multi = false,
-    Text = 'Choose Mob',
-    Callback = function(value)
-        selectedMob = value
+RightGroupBox:AddToggle('AutoFarm', {
+    Text = 'Auto Farm Humans',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autofarmhuman = Value
+        if Value then
+            autofarmhuman() -- Iniciar o autofarm apenas se estiver ativado
+        end
     end
 })
 
 RightGroupBox:AddToggle('AutoFarm', {
-    Text = 'Auto Farm',
+    Text = 'Auto Farm Investigators',
     Default = false,
     Callback = function(Value)
-        getgenv().autofarm = Value
+        getgenv().autofarminvestigators = Value
         if Value then
-            autofarm() -- Iniciar o autofarm apenas se estiver ativado
+            autofarminvestigators() -- Iniciar o autofarm apenas se estiver ativado
+        end
+    end
+})
+
+RightGroupBox:AddToggle('AutoFarm', {
+    Text = 'Auto Farm Aogiri Members',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autofarmAogiriMembers = Value
+        if Value then
+            autofarmAogiriMembers() -- Iniciar o autofarm apenas se estiver ativado
         end
     end
 })
