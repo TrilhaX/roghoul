@@ -114,18 +114,90 @@ end
 function killaura()
     while getgenv().killaura == true do
         while true do
-        game.Players.LocalPlayer.Character.Remotes.KeyEvent:FireServer(
-            "\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146" ..
-            "\166\230\147\141\228\189\160\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145" ..
-            "\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\166" ..
-            "\240\159\146\148\240\159\141\145\240\159\145\140\240\159\146\148\240\159\141\145\240\159" ..
-            "\145\140\240\159\146\166\240\159\146\148\240\159\141\145\240\159\145\140", 
-            "Mouse1", 
-            "Up", 
-            CFrame.new(), 
-            CFrame.new(), 
-            Vector3.new()
-        )
+            local player = game.Players.LocalPlayer
+            local key 
+            local trainers = nil
+            
+            while not key do
+                for i,v in pairs(getgc(true)) do
+                    if not key and type(v) == "function" and getinfo(v).source:find(".ClientControl") then
+                        for i2,v2 in pairs(getconstants(v)) do
+                            if v2 == "KeyEvent" then
+                                local keyfound = getconstant(v, i2 + 1)
+                                if #keyfound >= 100 then
+                                    key = keyfound
+                                    break
+                                end
+                            end
+                        end
+                    elseif type(v) == "table" then
+                        for _, playerName in ipairs(v) do
+                            if playerName == "(S1) Kureo Mado" or playerName == "(S1) Ken Kaneki" then
+                                trainers = v
+                                break
+                            end
+                        end
+                    end
+                    if key and trainers then
+                        break
+                    end
+                end
+                wait()
+            end
+            
+            function pressKey(topress)
+                player.Character.Remotes.KeyEvent:FireServer(key, topress, "Down", player:GetMouse().Hit, nil, workspace.Camera.CFrame)
+                wait()
+            end
+            
+            pressKey("Mouse1")
+        wait()
+        end
+    end
+end
+
+function Autoskill()
+    while getgenv().Autoskill == true do
+        while true do
+            local player = game.Players.LocalPlayer
+            local key 
+            local trainers = nil
+            
+            while not key do
+                for i,v in pairs(getgc(true)) do
+                    if not key and type(v) == "function" and getinfo(v).source:find(".ClientControl") then
+                        for i2,v2 in pairs(getconstants(v)) do
+                            if v2 == "KeyEvent" then
+                                local keyfound = getconstant(v, i2 + 1)
+                                if #keyfound >= 100 then
+                                    key = keyfound
+                                    break
+                                end
+                            end
+                        end
+                    elseif type(v) == "table" then
+                        for _, playerName in ipairs(v) do
+                            if playerName == "(S1) Kureo Mado" or playerName == "(S1) Ken Kaneki" then
+                                trainers = v
+                                break
+                            end
+                        end
+                    end
+                    if key and trainers then
+                        break
+                    end
+                end
+                wait()
+            end
+            
+            function pressKey(topress)
+                player.Character.Remotes.KeyEvent:FireServer(key, topress, "Down", player:GetMouse().Hit, nil, workspace.Camera.CFrame)
+                wait()
+            end
+            
+            pressKey("F")
+            pressKey("E")
+            pressKey("R")
         wait()
         end
     end
@@ -136,8 +208,8 @@ local Players = game:GetService("Players")
 
 local positions = {"BL", "BR", "FL", "FR", "Gyakusatsu"}
 
-function autogyakysatsu()
-    while getgenv().autogyakysatsu == true do
+function autogyakysatsuwhop()
+    while getgenv().autogyakysatsuwhop == true do
         local npcSpawns = game.Workspace:FindFirstChild("NPCSpawns")
         if npcSpawns then
             local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
@@ -172,6 +244,38 @@ function autogyakysatsu()
     end
 end
 
+function autogyakysatsu()
+    while getgenv().autogyakysatsu == true do
+        local npcSpawns = game.Workspace:FindFirstChild("NPCSpawns")
+        if npcSpawns then
+            local gyakusatsuSpawn = npcSpawns:FindFirstChild("GyakusatsuSpawn")
+            if gyakusatsuSpawn then
+                local targetCFrame = nil
+                for _, position in ipairs(positions) do
+                    local spawn = gyakusatsuSpawn:FindFirstChild(position)
+                    if spawn then
+                        targetCFrame = GetCFrame(spawn)
+                        break
+                    end
+                end
+                if targetCFrame then
+                    tweenToPosition(targetCFrame)
+                    wait()
+                else
+                    print("No spawn found!")
+                    wait()
+                end
+            else
+                print("GyakusatsuSpawn not found!")
+                wait()
+            end
+        else
+            warn("NPCSpawns not found! Waiting...")
+            wait()
+        end
+    end
+end
+
 function tweenToPosition(position)
     local character = Players.LocalPlayer.Character
     if not character then
@@ -196,31 +300,282 @@ function tweenToPosition(position)
     tween.Completed:Wait()  -- Aguarda até que a animação termine antes de prosseguir
 end
 
+-- Função para automatizar o treinamento
+function autotrain()
+    while getgenv().autotrain == true do -- Continua enquanto a variável global 'autotrain' for verdadeira
+        local player = game.Players.LocalPlayer
+        
+        -- Desconecta qualquer conexão anterior
+        local connection
+        if connection and connection.Connected then
+            connection:Disconnect()
+        end
+        
+        local tkey
+        local remotes = game.ReplicatedStorage.Remotes
+        local trainers
+        
+        connection = player.Backpack.DescendantAdded:Connect(function(obj)
+            if tostring(obj) == "TSCodeVal" and obj:IsA("StringValue") then
+                tkey = obj.Value
+            end
+        end)
+        
+        local result = remotes.Trainers.RequestTraining:InvokeServer()
+        
+        if result == "TRAINING" then
+            for i, v in pairs(workspace.TrainingSessions:GetChildren()) do
+                if v.Player.Value == player then
+                    remotes.Trainers.Comm:FireServer("Finished", tkey, false)
+                    break
+                end
+            end
+        elseif result == "TRAINING COMPLETE" then
+            for i, v in pairs(player.PlayerFolder.Trainers:GetChildren()) do
+                if table.find(trainers, v.Name) and v:FindFirstChild("Progress") and tonumber(v.Progress.Value) < 100 then
+                    remotes.Trainers.ChangeTrainer:InvokeServer(v.Name)
+                    wait(1.5)
+                end
+            end
+        end
+    end
+end 
+
+
 local selectedEnemie = nil
 
 function autofarm()
     while getgenv().autofarm do
-        local NpcSpawns = workspace.NPCSpawns
-        local Children = NpcSpawns:GetChildren()
-        local ValuesEnemie = {}
-        local selectedEnemie = {}
-        local namesSeen = {} -- Tabela para rastrear os nomes já vistos
-        
-        for _, child in ipairs(Children) do
-            if child.Name ~= "GyakusatsuSpawn" and selectedEnemie then -- Verificando se selectedEnemie está definido
-                local Children2 = child:GetChildren()
-                for _, child2 in ipairs(Children2) do
-                    local humanoidRootPart = child2:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart and child2.Name == selectedEnemie then
-                        print("Position of " .. selectedEnemie .. ": " .. humanoidRootPart.Position)
-                    end
+        if selectedMob ~= "None" then
+            local blacklist = {
+                ["GyakusatsuSpawn"] = true,
+                ["BossSpawn"] = true,
+            }
+                
+            local printedNames = {} -- Lista para rastrear os nomes já impressos
+            local ValuesMobs = {}
+                
+            local Spawns = workspace.NPCSpawns
+            local children = Spawns:GetChildren()
+            
+            for _, child in ipairs(children) do
+                if not blacklist[child.Name] then
+                    local npc = child
+                    local humanoidRootPart = npc:FindFirstChild("HumanoidRootPart", true)
+                    local targetCFrame = GetCFrame(humanoidRootPart)
+                    tweenToPosition(targetCFrame)
+                    wait()
                 end
             end
+        else
+            wait()
         end
-        wait() -- Adicionando um pequeno atraso entre as iterações
     end
 end
 
+function autofarmboss()
+    while getgenv().autofarmboss do
+        if selectedMob ~= "None" then
+            local blacklist = {
+                ["GyakusatsuSpawn"] = true,
+                ["AggroSpawns"] = true,
+                ["CCGSpawns"] = true,
+                ["GhoulSpawns"] = true,
+                ["HumanSpawns"] = true,
+            }
+                
+            local printedNames = {} -- Lista para rastrear os nomes já impressos
+            local ValuesMobs = {}
+                
+            local Spawns = workspace.NPCSpawns
+            local children = Spawns:GetChildren()
+            
+            for _, child in ipairs(children) do
+                if not blacklist[child.Name] then
+                    local Boss = child
+                    local humanoidRootPart = Boss:FindFirstChild("HumanoidRootPart", true)
+                    local targetCFrame = GetCFrame(humanoidRootPart)
+                    tweenToPosition(targetCFrame)
+                    wait()
+                end
+            end
+        else
+            wait()
+        end
+    end
+end
+
+
+function webhook()
+    while getgenv().webhook == true do
+        local discordWebhookUrl = urlwebhook
+
+        local yen = ""
+        local rc = ""
+        local rp = ""
+        local TotalFoucusPoints = ""
+        local level = ""
+        local Focus = ""
+        local EtoYoshimuraKills = ""
+        local KoutarouAmonKills = ""
+        local NishikiNishioKills = ""
+        local ToukaKirishimaKills = ""
+        local GyaSacs = ""
+        local Experience = ""
+        local ExpTime2x = ""
+        local Durability = ""
+        local name = game.Players.LocalPlayer
+        
+        if playerFolderStats then
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+            if Stats then
+                yen = Stats.Yen.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    rc = Stats.RC.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    rp = Stats.Reputation.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    TotalFoucusPoints = Stats.TotalFocusPoints.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    level = Stats.Level.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    Focus = Stats.Focus.Value
+            end
+        
+            local playerFolderBossKills = playerFolderStats:FindFirstChild("BossKills")
+            if playerFolderBossKills then
+                if playerFolderBossKills:FindFirstChild("Eto Yoshimura") then
+                    EtoYoshimuraKills = playerFolderBossKills["Eto Yoshimura"].Value
+                end
+        
+                if playerFolderBossKills:FindFirstChild("Koutarou Amon") then
+                    KoutarouAmonKills = playerFolderBossKills["Koutarou Amon"].Value
+                end
+        
+                if playerFolderBossKills:FindFirstChild("Nishiki Nishio") then
+                    NishikiNishioKills = playerFolderBossKills["Nishiki Nishio"].Value
+                end
+        
+                if playerFolderBossKills:FindFirstChild("Touka Kirishima") then
+                    ToukaKirishimaKills = playerFolderBossKills["Touka Kirishima"].Value
+                end
+            end
+        
+            if playerFolderStats:FindFirstChild("Inventory") then
+                if playerFolderStats.Inventory:FindFirstChild("GyaSacs") then
+                    GyaSacs = playerFolderStats.Inventory.GyaSacs.Value
+                end
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    Experience = Stats.Experience.Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    ExpTime2x = Stats["2xExpTime"].Value
+            end
+        
+            local Stats = playerFolderStats:FindFirstChild("Stats") 
+                if Stats then
+                    Durability = Stats.Durability.Value
+            end
+        end
+
+        -- Construindo o payload para enviar para o webhook
+        local payload = {
+            content = "Tempest Hub",
+            embeds = {
+                {
+                    title = "Account Situation",
+                    description = string.format("Name: %s\nLevel: %s\nYen: %s\nRC: %s\nReputation: %s\nTotal Focus Point: %s\nFocus: %s\nEto Yoshimura KIlls: %s\nKoutarou Amon Kills: %s\nNishiki Nishio Kills: %s\nTouka Kirishima Kills: %s\nGya Sacs: %s\nExperience: %s\n2x Exp Time: %s\nDurability: %s\n\n------------------------------------",
+                             tostring(name), tostring(level), tostring(yen), tostring(rc), tostring(rp), tostring(TotalFocusPoints), tostring(Focus), tostring(EtoYoshimuraKills), tostring(KoutarouAmonKills), tostring(NishikiNishioKills), tostring(ToukaKirishimaKills), tostring(GyaSacs), tostring(Experience), tostring(ExpTime2x), tostring(Durability)),
+                    color = 10098630,
+                    fields = {
+                        {
+                            name = "Discord",
+                            value = "https://discord.gg/tvQqnYKF7j"
+                        }
+                    },
+                    author = {
+                        name = "Ro Ghoul"
+                    },
+                    image = {
+                        url = "https://cdn.discordapp.com/attachments/1060039153494007900/1234607717549740062/Imagem_do_WhatsApp_de_2024-04-22_as_22.38.07_6779880f.jpg?ex=6632ab09&is=66315989&hm=a8e2e1b059838b45701b6959ba8e257413b2a099ef79a8c6bba056669a9f8c4b&"
+                    },
+                    thumbnail = {
+                        url = "https://tr.rbxcdn.com/2a201e67272f350e2478d8fdf1c4d9af/150/150/Image/Webp"
+                    }
+                }
+            }
+        }
+
+        -- Convertendo a tabela para JSON
+        local payloadJson = game:GetService("HttpService"):JSONEncode(payload)
+
+        -- Enviando a requisição POST para o webhook do Discord
+        local response = syn.request({
+            Url = discordWebhookUrl,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = payloadJson
+        })
+
+        if response.Success then
+            print("A")
+        else
+            warn("Erro ao enviar mensagem para o Discord:", response.StatusCode, response.Body)
+        end
+        wait(delaywebhook)
+    end
+end
+
+
+
+local blacklist = {
+    ["GyakusatsuSpawn"] = true,
+}
+
+local printedNames = {} -- Lista para rastrear os nomes já impressos
+local ValuesMobs = {}
+
+local Spawns = workspace.NPCSpawns
+local children = Spawns:GetChildren()
+
+for _, child in ipairs(children) do
+    if not blacklist[child.Name] then
+        local npc = child
+        local children2 = npc:GetChildren()
+        for _, child2 in ipairs(children2) do
+            -- Verificar se o nome já foi impresso antes de imprimir
+            if not printedNames[child2.Name] then
+                table.insert(ValuesMobs, child2.Name)
+                printedNames[child2.Name] = true -- Marcar o nome como impresso
+            end
+        end
+    end
+end
+
+
+coroutine.wrap(autogyakysatsuwhop)()
 coroutine.wrap(autogyakysatsu)()
 
 local Tabs = {
@@ -256,31 +611,36 @@ LeftGroupBox:AddToggle('KillAura', {
     end
 })
 
+LeftGroupBox:AddToggle('AutoSkill', {
+    Text = 'Auto Skill',
+    Default = false,
+    Callback = function(Value)
+        getgenv().Autoskill = Value
+        Autoskill()
+    end
+})
+
+LeftGroupBox:AddToggle('AutoTrain', {
+    Text = 'Auto Trainer',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autotrain = Value
+        autotrain()
+    end
+})
+
 local RightGroupBox = Tabs.Main:AddRightGroupbox('Farm')
 
-local NpcSpawns = workspace.NPCSpawns
-local Children = NpcSpawns:GetChildren()
-local ValuesEnemie = {}
-local namesSeen = {} -- Tabela para rastrear os nomes já vistos
 
-for _, child in ipairs(Children) do
-    if child.Name ~= "GyakusatsuSpawn" and not namesSeen[child.Name] then
-        namesSeen[child.Name] = true
-        local Children2 = child:GetChildren() -- Corrigido para 'child', em vez de 'child2'
-        for _, child2 in ipairs(Children2) do
-            table.insert(ValuesEnemie, child2.Name) -- Imprimindo o nome do filho
-        end
-    end
-end
 
 
 RightGroupBox:AddDropdown('Enemie', {
-    Values = ValuesEnemie,
+    Values = ValuesMobs,
     Default = "None",
     Multi = false,
     Text = 'Choose Mob',
     Callback = function(value)
-        selectedEnemie = value
+        selectedMob = value
     end
 })
 
@@ -295,12 +655,32 @@ RightGroupBox:AddToggle('AutoFarm', {
     end
 })
 
+RightGroupBox:AddToggle('AutoFarmBoss', {
+    Text = 'Auto Farm Boss',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autofarmboss = Value
+        if Value then
+            autofarmboss()
+        end
+    end
+})
+
 RightGroupBox:AddToggle('AutoGyakusatsu', {
-    Text = 'Auto Gyakusatsu(With ServerHop)',
+    Text = 'Auto Gyakusatsu',
     Default = false,
     Callback = function(Value)
         getgenv().autogyakysatsu = Value
         autogyakysatsu()
+    end
+})
+
+RightGroupBox:AddToggle('AutoGyakusatsuWHop', {
+    Text = 'Auto Gyakusatsu(With ServerHop)',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autogyakysatsuwhop = Value
+        autogyakysatsuwhopwhop()
     end
 })
 
@@ -409,6 +789,49 @@ LeftGroupBox:AddLabel("Gya Sacs: " .. GyaSacs, true)
 LeftGroupBox:AddLabel("Experience: " .. Experience, true)
 LeftGroupBox:AddLabel("2x Exp Time: " .. ExpTime2x, true)
 LeftGroupBox:AddLabel("Durability: " .. Durability, true)
+
+
+local RightGroupBox = Tabs.Main:AddRightGroupbox('WebHook')
+
+RightGroupBox:AddInput('LinkWebhook', {
+    Default = '',
+    Numeric = false, -- true / false, only allows numbers
+    Finished = false, -- true / false, only calls callback when you press enter
+
+    Text = 'WebHook Link',
+    Tooltip = 'Press Enter To Save', -- Information shown when you hover over the textbox
+
+    Placeholder = 'Enter Webhook', -- placeholder text when the box is empty
+    -- MaxLength is also an option which is the max length of the text
+    Callback = function(Value)
+        urlwebhook = Value
+    end
+})
+
+RightGroupBox:AddSlider('SpamWebhook', {
+    Text = 'Delay Webhook',
+    Default = 0,
+    Min = 0,
+    Max = 10,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        delaywebhook = Value
+    end
+})
+
+RightGroupBox:AddToggle('Webhook', {
+    Text = 'Send Webhook',
+    Default = false,
+    Callback = function(Value)
+        getgenv().webhook = Value
+        if Value then
+            webhook()
+        end
+    end
+})
+
 
 local FrameTimer = tick()
 local FrameCounter = 0
