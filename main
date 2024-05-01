@@ -370,7 +370,7 @@ function autofarmhuman()
                     end
                 end
             else
-                break
+                wait()
             end
         end
     end
@@ -433,7 +433,7 @@ function autofarmAogiriMembers()
                     end
                 end
             else
-                break
+                wait()
             end
         end
     end
@@ -462,10 +462,12 @@ function autofarmboss()
                             tweenToPosition(targetCFrame)
                             wait()
                         end
+                    else
+                        print("No have Boss")
                     end
                 end
             else
-                break
+                wait()
             end
         end
     end
