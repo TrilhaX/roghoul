@@ -157,8 +157,16 @@ function killaura()
 end
 
 function Autoskill()
-    while getgenv().Autoskill == true do
+    while true do
+        if not getgenv().Autoskill then
+            break
+        end
+        
         while true do
+            if not getgenv().Autoskill then
+                break
+            end
+            
             local player = game.Players.LocalPlayer
             local key 
             local trainers = nil
@@ -190,18 +198,76 @@ function Autoskill()
                 wait()
             end
             
-            function pressKey(topress)
-                player.Character.Remotes.KeyEvent:FireServer(key, topress, "Down", player:GetMouse().Hit, nil, workspace.Camera.CFrame)
-                wait()
+            local function pressKey(topress)
+                local kagune = player.Character:FindFirstChild("Kagune")
+                if not kagune then
+                    player.Character.Remotes.KeyEvent:FireServer(key, topress, "Down", player:GetMouse().Hit, nil, workspace.Camera.CFrame)
+                    wait()
+                end
             end
             
             pressKey("F")
             pressKey("E")
             pressKey("R")
-        wait()
+            wait()
         end
+        wait()
     end
 end
+
+
+function autoactiveK()
+    while getgenv().autoactiveK == true do
+        local player = game.Players.LocalPlayer
+        local key = nil
+        local trainers = nil
+        local startTime = tick() -- Registra o tempo de início
+        
+        -- Espera por até 5 segundos para encontrar a tecla e treinadores
+        while not key and tick() - startTime < 5 do
+            for _, obj in pairs(getgc(true)) do
+                if not key and type(obj) == "function" and getinfo(obj).source:find(".ClientControl") then
+                    for i, const in pairs(getconstants(obj)) do
+                        if const == "KeyEvent" then
+                            local keyfound = getconstant(obj, i + 1)
+                            if #keyfound >= 100 then
+                                key = keyfound
+                                break
+                            end
+                        end
+                    end
+                elseif type(obj) == "table" then
+                    for _, playerName in ipairs(obj) do
+                        if playerName == "(S1) Kureo Mado" or playerName == "(S1) Ken Kaneki" then
+                            trainers = obj
+                            break
+                        end
+                    end
+                end
+                if key and trainers then
+                    break
+                end
+            end
+            wait()
+        end
+
+        -- Função para pressionar uma tecla
+        local function pressKey(topress)
+            local kagune = player.Character:FindFirstChild("Kagune")
+            if not kagune then
+                player.Character.Remotes.KeyEvent:FireServer(key, topress, "Down", player:GetMouse().Hit, nil, workspace.Camera.CFrame)
+                wait(1)
+            end
+        end
+        
+        -- Executa a função para pressionar a tecla
+        pressKey(selectedKagune)
+        
+        wait(1)
+    end
+    wait(1)
+end
+
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -288,7 +354,7 @@ function tweenToPosition(position)
     end
     
     local tweenInfo = TweenInfo.new(
-        0,
+        1,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.InOut,
         0,
@@ -345,7 +411,11 @@ end
 local selectedEnemie = nil
 
 function autofarmhuman()
-    while getgenv().autofarmhuman == true do
+    while true do
+        if not getgenv().autofarmhuman then
+            break
+        end
+        
         local blacklist = {
             ["GyakusatsuSpawn"] = true,
             ["BossSpawns"] = true,
@@ -358,26 +428,31 @@ function autofarmhuman()
         local children = Humans:GetChildren()
                     
         for _, child in ipairs(children) do
-            if getgenv().autofarmhuman then
-                if not blacklist[child.Name] then
-                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
-                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
-                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
-                            local targetCFrame = GetCFrame(humanoidRootPart)
-                            tweenToPosition(targetCFrame)
-                            wait()
-                        end
+            if not getgenv().autofarmhuman then
+                break
+            end
+            
+            if not blacklist[child.Name] then
+                local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                    while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmhuman do
+                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        tweenToPosition(targetCFrame)
+                        wait()
                     end
                 end
-            else
-                wait()
             end
         end
+        wait()
     end
 end
 
 function autofarminvestigators()
-    while getgenv().autofarminvestigators do
+    while true do
+        if not getgenv().autofarminvestigators then
+            break
+        end
+        
         local blacklist = {
             ["GyakusatsuSpawn"] = true,
             ["BossSpawns"] = true,
@@ -389,26 +464,31 @@ function autofarminvestigators()
         local children = Humans:GetChildren()
                     
         for _, child in ipairs(children) do
-            if getgenv().autofarminvestigators then
-                if not blacklist[child.Name] then
-                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
-                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
-                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
-                            local targetCFrame = GetCFrame(humanoidRootPart)
-                            tweenToPosition(targetCFrame)
-                            wait()
-                        end
+            if not getgenv().autofarminvestigators then
+                break
+            end
+            
+            if not blacklist[child.Name] then
+                local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                    while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarminvestigators do
+                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        tweenToPosition(targetCFrame)
+                        wait()
                     end
                 end
-            else
-                wait()
             end
         end
+        wait()
     end
 end
 
 function autofarmAogiriMembers()
-    while getgenv().autofarmAogiriMembers do
+    while true do
+        if not getgenv().autofarmAogiriMembers then
+            break
+        end
+        
         local blacklist = {
             ["GyakusatsuSpawn"] = true,
             ["BossSpawns"] = true,
@@ -421,26 +501,31 @@ function autofarmAogiriMembers()
         local children = Humans:GetChildren()
                     
         for _, child in ipairs(children) do
-            if getgenv().autofarmAogiriMembers then
-                if not blacklist[child.Name] then
-                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
-                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
-                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
-                            local targetCFrame = GetCFrame(humanoidRootPart)
-                            tweenToPosition(targetCFrame)
-                            wait()
-                        end
+            if not getgenv().autofarmAogiriMembers then
+                break
+            end
+            
+            if not blacklist[child.Name] then
+                local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                    while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmAogiriMembers do
+                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        tweenToPosition(targetCFrame)
+                        wait()
                     end
                 end
-            else
-                wait()
             end
         end
+        wait()
     end
 end
 
 function autofarmboss()
-    while getgenv().autofarmboss do
+    while true do
+        if not getgenv().autofarmboss then
+            break
+        end
+        
         local blacklist = {
             ["GyakusatsuSpawn"] = true,
             ["AggroSpawns"] = true,
@@ -453,45 +538,47 @@ function autofarmboss()
         local children = Spawns:GetChildren()
             
         for _, child in ipairs(children) do
-            if getgenv().autofarmboss then
-                if not blacklist[child.Name] then
-                    local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
-                    if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
-                        while humanoidRootPart.Parent:FindFirstChild("Humanoid") do
-                            local targetCFrame = GetCFrame(humanoidRootPart)
-                            tweenToPosition(targetCFrame)
-                            wait()
-                        end
-                    else
-                        print("No have Boss")
+            if not getgenv().autofarmboss then
+                break
+            end
+            
+            if not blacklist[child.Name] then
+                local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
+                if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
+                    while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmboss do
+                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        tweenToPosition(targetCFrame)
+                        wait()
                     end
+                else
+                    print("No have Boss")
                 end
-            else
-                wait()
             end
         end
+        wait()
     end
 end
+
 
 
 function webhook()
     while getgenv().webhook == true do
         local discordWebhookUrl = urlwebhook
 
-        local yen = ""
-        local rc = ""
-        local rp = ""
-        local TotalFoucusPoints = ""
-        local level = ""
-        local Focus = ""
-        local EtoYoshimuraKills = ""
-        local KoutarouAmonKills = ""
-        local NishikiNishioKills = ""
-        local ToukaKirishimaKills = ""
-        local GyaSacs = ""
-        local Experience = ""
-        local ExpTime2x = ""
-        local Durability = ""
+        local yen = {}
+        local rc = {}
+        local rp = {}
+        local TotalFoucusPoints = {}
+        local level = {}
+        local Focus = {}
+        local EtoYoshimuraKills = {}
+        local KoutarouAmonKills = {}
+        local NishikiNishioKills = {}
+        local ToukaKirishimaKills = {}
+        local GyaSacs = {}
+        local Experience = {}
+        local ExpTime2x = {}
+        local Durability = {}
         local name = game.Players.LocalPlayer
         
         if playerFolderStats then
@@ -615,6 +702,57 @@ function webhook()
     end
 end
 
+function autoPhysicalFocus()
+    while getgenv().autoPhysicalFocus == true do
+        local args = {
+            [1] = "Focus",
+            [2] = "PhysicalAddButton",
+            [3] = 1
+        }
+
+        game:GetService("Players").LocalPlayer:WaitForChild("StatsFunction"):InvokeServer(unpack(args))
+        wait()
+    end
+end
+
+function autoWeaponFocus()
+    while getgenv().autoWeaponFocus == true do
+        local args = {
+            [1] = "Focus",
+            [2] = "WeaponAddButton",
+            [3] = 1
+        }
+
+        game:GetService("Players").LocalPlayer:WaitForChild("StatsFunction"):InvokeServer(unpack(args))
+        wait()
+    end
+end
+
+function autoDurabilityFocus()
+    while getgenv().autoDurabilityFocus == true do
+        local args = {
+            [1] = "Focus",
+            [2] = "DurabilityAddButton",
+            [3] = 1
+        }
+
+        game:GetService("Players").LocalPlayer:WaitForChild("StatsFunction"):InvokeServer(unpack(args))
+        wait()
+    end
+end
+
+function autoSpeedFocus()
+    while getgenv().autoSpeedFocus == true do
+        local args = {
+            [1] = "Focus",
+            [2] = "SpeedAddButton",
+            [3] = 1
+        }
+
+        game:GetService("Players").LocalPlayer:WaitForChild("StatsFunction"):InvokeServer(unpack(args))
+        wait()
+    end
+end
 
 
 local blacklist = {
@@ -684,6 +822,25 @@ LeftGroupBox:AddToggle('AutoSkill', {
     Callback = function(Value)
         getgenv().Autoskill = Value
         Autoskill()
+    end
+})
+
+LeftGroupBox:AddDropdown('Weapons', {
+    Values = {"One", "Two", "Three", "Four"},
+    Default = "None",
+    Multi = false,
+    Text = 'Choose Number To Active Kagune(Form)',
+    Callback = function(value)
+        selectedKagune = value
+    end
+})
+
+LeftGroupBox:AddToggle('AutoKagune', {
+    Text = 'Auto Active Kagune',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autoactiveK = Value
+        autoactiveK()
     end
 })
 
@@ -757,6 +914,52 @@ RightGroupBox:AddToggle('AutoGyakusatsuWHop', {
     Callback = function(Value)
         getgenv().autogyakysatsuwhop = Value
         autogyakysatsuwhopwhop()
+    end
+})
+
+local RightGroupBox = Tabs.Main:AddRightGroupbox('Auto Focus')
+
+RightGroupBox:AddToggle('AutoFocus', {
+    Text = 'Auto Focus Physical',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autoPhysicalFocus = Value
+        if Value then
+            autoPhysicalFocus() -- Iniciar o autofarm apenas se estiver ativado
+        end
+    end
+})
+
+RightGroupBox:AddToggle('AutoFocus', {
+    Text = 'Auto Focus Weapon',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autoWeaponFocus = Value
+        if Value then
+            autoWeaponFocus() -- Iniciar o autofarm apenas se estiver ativado
+        end
+    end
+})
+
+RightGroupBox:AddToggle('AutoFocus', {
+    Text = 'Auto Focus Durability',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autoDurabilityFocus = Value
+        if Value then
+            autoDurabilityFocus() -- Iniciar o autofarm apenas se estiver ativado
+        end
+    end
+})
+
+RightGroupBox:AddToggle('AutoFocus', {
+    Text = 'Auto Focus Speed',
+    Default = false,
+    Callback = function(Value)
+        getgenv().autoSpeedFocus = Value
+        if Value then
+            autoSpeedFocus()
+        end
     end
 })
 
