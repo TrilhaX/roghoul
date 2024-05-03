@@ -86,6 +86,39 @@ function GetCFrame(obj, height, angle)
     return cframe
 end
 
+function GetPositionFARMMETHOD(Mob, Method, offset)
+    if not Mob then
+        return
+    end
+
+    local MobCFrame = GetCFrame(Mob)
+    if not MobCFrame then
+        return
+    end
+
+    local MobPosition = MobCFrame.Position
+    offset = offset
+    Method = Method
+
+    local function positionCharacter(position)
+        local lookVector = (MobPosition - position).Unit
+        return CFrame.new(position, position + lookVector)
+    end
+
+    local Pos
+    if Method == 'Above' then
+        Pos = positionCharacter(MobPosition + Vector3.new(0, offset, 0))
+    elseif Method == 'Below' then
+        Pos = positionCharacter(MobPosition - Vector3.new(0, offset, 0))
+    elseif Method == 'Front' then
+        Pos = positionCharacter(MobPosition + MobCFrame.LookVector * offset)
+    elseif Method == 'Behind' then
+        Pos = positionCharacter(MobPosition - MobCFrame.LookVector * offset)
+    end
+
+    return Pos
+end
+
 function autoccg()
     while getgenv().autoccg == true do
             local args = {
@@ -151,8 +184,8 @@ function killaura()
             end
             
             pressKey("Mouse1")
-        wait()
         end
+        wait()
     end
 end
 
@@ -354,7 +387,7 @@ function tweenToPosition(position)
     end
     
     local tweenInfo = TweenInfo.new(
-        1,
+        0,
         Enum.EasingStyle.Linear,
         Enum.EasingDirection.InOut,
         0,
@@ -436,7 +469,7 @@ function autofarmhuman()
                 local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
                 if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
                     while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmhuman do
-                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        local targetCFrame = GetPositionFARMMETHOD(humanoidRootPart, 'Front', 1)
                         tweenToPosition(targetCFrame)
                         wait()
                     end
@@ -472,7 +505,7 @@ function autofarminvestigators()
                 local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
                 if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
                     while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarminvestigators do
-                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        local targetCFrame = GetPositionFARMMETHOD(humanoidRootPart, 'Behind', 2)
                         tweenToPosition(targetCFrame)
                         wait()
                     end
@@ -509,7 +542,7 @@ function autofarmAogiriMembers()
                 local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
                 if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
                     while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmAogiriMembers do
-                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        local targetCFrame = GetPositionFARMMETHOD(humanoidRootPart, 'Behind', 2)
                         tweenToPosition(targetCFrame)
                         wait()
                     end
@@ -546,7 +579,7 @@ function autofarmboss()
                 local humanoidRootPart = child:FindFirstChild("HumanoidRootPart", true)
                 if humanoidRootPart and humanoidRootPart.Parent and humanoidRootPart.Parent:FindFirstChild("Humanoid") then
                     while humanoidRootPart.Parent:FindFirstChild("Humanoid") and getgenv().autofarmboss do
-                        local targetCFrame = GetCFrame(humanoidRootPart)
+                        local targetCFrame = GetPositionFARMMETHOD(humanoidRootPart, 'Behind', 2)
                         tweenToPosition(targetCFrame)
                         wait()
                     end
@@ -812,9 +845,12 @@ LeftGroupBox:AddToggle('KillAura', {
     Default = false,
     Callback = function(Value)
         getgenv().killaura = Value
-        killaura()
+        if Value then
+            killaura()
+        end
     end
 })
+
 
 LeftGroupBox:AddToggle('AutoSkill', {
     Text = 'Auto Skill',
