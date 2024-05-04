@@ -949,7 +949,7 @@ RightGroupBox:AddToggle('AutoGyakusatsuWHop', {
     Default = false,
     Callback = function(Value)
         getgenv().autogyakysatsuwhop = Value
-        autogyakysatsuwhopwhop()
+        autogyakysatsuwhop()
     end
 })
 
