@@ -146,7 +146,9 @@ end
 
 function killaura()
     while getgenv().killaura == true do
-        while true do
+        if not getgenv().killaura then
+            break
+        end
             local player = game.Players.LocalPlayer
             local key 
             local trainers = nil
@@ -185,20 +187,14 @@ function killaura()
             
             pressKey("Mouse1")
         end
-        wait()
-    end
+    wait()
 end
 
 function Autoskill()
-    while true do
+    while getgenv().Autoskill == true do
         if not getgenv().Autoskill then
             break
         end
-        
-        while true do
-            if not getgenv().Autoskill then
-                break
-            end
             
             local player = game.Players.LocalPlayer
             local key 
@@ -245,12 +241,14 @@ function Autoskill()
             wait()
         end
         wait()
-    end
 end
 
 
 function autoactiveK()
     while getgenv().autoactiveK == true do
+        if not getgenv().autoactiveK then
+            break
+        end
         local player = game.Players.LocalPlayer
         local key = nil
         local trainers = nil
@@ -317,7 +315,7 @@ function autogyakysatsuwhop()
                 for _, position in ipairs(positions) do
                     local spawn = gyakusatsuSpawn:FindFirstChild(position)
                     if spawn then
-                        targetCFrame = GetCFrame(spawn)
+                        targetCFrame = GetCFrame(spawn, 5)
                         break
                     end
                 end
@@ -353,7 +351,7 @@ function autogyakysatsu()
                 for _, position in ipairs(positions) do
                     local spawn = gyakusatsuSpawn:FindFirstChild(position)
                     if spawn then
-                        targetCFrame = GetCFrame(spawn)
+                        targetCFrame = GetCFrame(spawn, 5)
                         break
                     end
                 end
@@ -444,7 +442,7 @@ end
 local selectedEnemie = nil
 
 function autofarmhuman()
-    while true do
+    while getgenv().autofarmhuman == true do
         if not getgenv().autofarmhuman then
             break
         end
@@ -481,7 +479,7 @@ function autofarmhuman()
 end
 
 function autofarminvestigators()
-    while true do
+    while getgenv().autofarminvestigators == true do
         if not getgenv().autofarminvestigators then
             break
         end
@@ -517,7 +515,7 @@ function autofarminvestigators()
 end
 
 function autofarmAogiriMembers()
-    while true do
+    while getgenv().autofarmAogiriMembers == true do
         if not getgenv().autofarmAogiriMembers then
             break
         end
@@ -554,7 +552,7 @@ function autofarmAogiriMembers()
 end
 
 function autofarmboss()
-    while true do
+    while getgenv().autofarmboss == true do
         if not getgenv().autofarmboss then
             break
         end
@@ -845,9 +843,7 @@ LeftGroupBox:AddToggle('KillAura', {
     Default = false,
     Callback = function(Value)
         getgenv().killaura = Value
-        if Value then
-            killaura()
-        end
+        killaura()
     end
 })
 
@@ -896,9 +892,7 @@ RightGroupBox:AddToggle('AutoFarm', {
     Default = false,
     Callback = function(Value)
         getgenv().autofarmhuman = Value
-        if Value then
-            autofarmhuman() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autofarmhuman() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -907,9 +901,7 @@ RightGroupBox:AddToggle('AutoFarm', {
     Default = false,
     Callback = function(Value)
         getgenv().autofarminvestigators = Value
-        if Value then
-            autofarminvestigators() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autofarminvestigators() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -918,9 +910,7 @@ RightGroupBox:AddToggle('AutoFarm', {
     Default = false,
     Callback = function(Value)
         getgenv().autofarmAogiriMembers = Value
-        if Value then
-            autofarmAogiriMembers() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autofarmAogiriMembers() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -929,9 +919,7 @@ RightGroupBox:AddToggle('AutoFarmBoss', {
     Default = false,
     Callback = function(Value)
         getgenv().autofarmboss = Value
-        if Value then
-            autofarmboss()
-        end
+        autofarmboss()
     end
 })
 
@@ -960,9 +948,7 @@ RightGroupBox:AddToggle('AutoFocus', {
     Default = false,
     Callback = function(Value)
         getgenv().autoPhysicalFocus = Value
-        if Value then
-            autoPhysicalFocus() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autoPhysicalFocus() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -971,9 +957,7 @@ RightGroupBox:AddToggle('AutoFocus', {
     Default = false,
     Callback = function(Value)
         getgenv().autoWeaponFocus = Value
-        if Value then
-            autoWeaponFocus() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autoWeaponFocus() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -982,9 +966,7 @@ RightGroupBox:AddToggle('AutoFocus', {
     Default = false,
     Callback = function(Value)
         getgenv().autoDurabilityFocus = Value
-        if Value then
-            autoDurabilityFocus() -- Iniciar o autofarm apenas se estiver ativado
-        end
+        autoDurabilityFocus() -- Iniciar o autofarm apenas se estiver ativado
     end
 })
 
@@ -993,9 +975,7 @@ RightGroupBox:AddToggle('AutoFocus', {
     Default = false,
     Callback = function(Value)
         getgenv().autoSpeedFocus = Value
-        if Value then
-            autoSpeedFocus()
-        end
+        autoSpeedFocus()
     end
 })
 
